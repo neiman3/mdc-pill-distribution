@@ -1,3 +1,5 @@
+// this is a test file to move the platter
+
 #include <Stepper.h>
 
 #define PIN_VACUUM_MOTOR        11
