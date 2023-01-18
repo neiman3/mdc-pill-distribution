@@ -1,5 +1,3 @@
-// this is a test file to move the platter
-
 #include <Stepper.h>
 
 #define PIN_VACUUM_MOTOR        11
@@ -91,6 +89,8 @@ void loop() {
         desired_platter_position = 600;
       } else if(incomingByte=='5') {
         desired_platter_position = 800;
+      } else if(incomingByte=='d') { // D for dispense
+        state = ST_MOVE_PLATTER;
       }
       
     }
@@ -100,95 +100,7 @@ void loop() {
       case ST_RST:
         msg = "Reset mode";
         break;
-
-      case ST_WAIT:
-      msg = "Waiting for trigger";
-        break;
-        
-      case ST_DISPENSE_PILL:
-
-        // a FSM for dispensing phase
-        // If the platter needs to move, that is handled by the ST_MOVE state. Use next_state = ST_DISPENSE_PILL to ensure that the FSM will return to the dispensing phase.
-        switch (subfsm_dispense) {
-          
-          case ST_MOVE_TO_PILL:
-            desired_platter_position = 500;
-            position_sensor_value = analogRead(PIN_POSITION_SENSOR);
-            if ((position_sensor_value >= desired_platter_position - PARAM_CTL_HYSTERESIS) || (position_sensor_value <= desired_platter_position + PARAM_CTL_HYSTERESIS)) {
-              // position sensor is nice and close to desired value- proceed to next state
-              state = ST_DISPENSE_PILL;
-              subfsm_dispense = ST_LIN_DOWN;
-            } else {
-              msg = "moving platter (dispensing pill)";
-              state = ST_MOVE_PLATTER;
-              next_state = ST_DISPENSE_PILL; // move platter and return to this state.
-            }
-            break;
-            
-          case ST_LIN_DOWN:
-            msg = "moving linear motor downwards";
-            if (!digitalRead(PIN_LIMSW_L)) {
-              // Lower limit switch is triggered
-              // stop motor
-              lin_motor_stop();
-              subfsm_dispense = ST_LIN_UP;
-            } else if (!digitalRead(PIN_LIMSW_H)) {
-              // limit switch is triggered
-              lin_motor_stop();
-              subfsm_dispense = ST_LIN_UP;
-            } else if ((analogRead(PIN_VACUUM_MOTOR_SHUNT) > PARAM_VACUUM_MOTOR_CURRENT_THRESHOLD)) {
-              // motor current exceeded steady-state threshold
-              lin_motor_stop();
-              subfsm_dispense = ST_LIN_UP;
-            } else {
-              // ok to continue moving stepper
-              lin_motor_move(0, 128);
-              subfsm_dispense = ST_LIN_DOWN;
-            }
-            break;
-            
-          case ST_LIN_UP:
-            msg = "moving linear motor upwards";
-            if (!digitalRead(PIN_LIMSW_L)) {
-              // Lower limit switch is triggered
-              // stop motor
-              lin_motor_stop();
-              delay(PARAM_CTL_TIME_STEP);
-              lin_motor_move(1, 127);
-              delay(PARAM_CTL_TIME_STEP);
-              lin_motor_stop();
-              subfsm_dispense = ST_MOVE_TO_HOLE;
-            } else if (!digitalRead(PIN_LIMSW_H)) {
-              // limit switch is triggered
-              lin_motor_stop();
-              delay(PARAM_CTL_TIME_STEP);
-              lin_motor_move(1, 127);
-              delay(PARAM_CTL_TIME_STEP);
-              lin_motor_stop();
-              subfsm_dispense = ST_MOVE_TO_HOLE;
-            } else {
-              // ok to continue moving stepper
-              lin_motor_move(1, 128);
-              subfsm_dispense = ST_LIN_UP;
-            }
-            break;
-          
-          case ST_MOVE_TO_HOLE:
-            desired_platter_position = 0;
-            position_sensor_value = analogRead(PIN_POSITION_SENSOR);
-            if ((position_sensor_value >= desired_platter_position - PARAM_CTL_HYSTERESIS) || (position_sensor_value <= desired_platter_position + PARAM_CTL_HYSTERESIS)) {
-              // position sensor is nice and close to desired value- proceed to next state
-              state = ST_RST;
-              subfsm_dispense = ST_MOVE_TO_PILL;
-            } else {
-              msg = "moving platter (dispensing pill)";
-              state = ST_MOVE_PLATTER;
-              next_state = ST_DISPENSE_PILL; // move platter and return to this state.
-            }
-            break;
-          }
-          
-          break;       
+               
   
       case ST_MOVE_PLATTER:
       // move one step
