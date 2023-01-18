@@ -33,7 +33,7 @@ Stepper myStepper(PARAM_STEPPER_STEPS, PIN_STEPPER_1, PIN_STEPPER_2, PIN_STEPPER
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(116200);
+  Serial.begin(115200);
   pinMode(PIN_VACUUM_MOTOR, OUTPUT);
   pinMode(PIN_VACUUM_BREAKER, OUTPUT);
   pinMode(PIN_STEPPER_1, OUTPUT);
