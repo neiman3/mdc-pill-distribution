@@ -73,3 +73,13 @@ int check_user_input() {
   }
   return -1;
 }
+
+int convert_to_position (int pill_number){
+  if (pill_number == 1){
+    return 200;
+  }
+  else if (pill_number == 2){
+    return 800;
+  }
+  return -1;
+}
