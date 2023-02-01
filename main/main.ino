@@ -54,3 +54,22 @@ void loop() {
   // put your main code here, to run repeatedly:
 
 }
+
+int check_user_input() {
+  // reads serial input and returns pill that the user wants to dispense.
+  // returns a -1 for no input.
+  if (Serial.available() > 0) {
+    // user typed something in the serial terminal
+    uint8_t incomingByte = Serial.read();
+    if (incomingByte == '\n') {
+      // newline- skip
+    } else if(incomingByte=='1') {
+      // pill 1
+      return 1;
+    } else if(incomingByte=='2') {
+      // pill 2
+      return 2;
+    }
+  }
+  return -1;
+}
