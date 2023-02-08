@@ -86,7 +86,7 @@ void loop() {
     actuator_up();
     while (true) {
       // Move to the hole
-      hole_position = calculate_closest_hole();
+      hole_position = calculate_closest_hole(platter_position);
       platter_position = avg_read(PIN_POSITION_SENSOR);
       if (position_sensor_ok(platter_position, hole_position)) {
         break;
