@@ -35,7 +35,7 @@ Stepper myStepper(PARAM_STEPPER_STEPS, PIN_STEPPER_1, PIN_STEPPER_2, PIN_STEPPER
 
 void setup() {
   // put your setup code here, to run once:
-Serial.begin(115200);
+  Serial.begin(115200);
   pinMode(PIN_VACUUM_MOTOR, OUTPUT);
   pinMode(PIN_VACUUM_BREAKER, OUTPUT);
   pinMode(PIN_STEPPER_1, OUTPUT);
@@ -111,9 +111,11 @@ int check_user_input() {
       // newline- skip
     } else if(incomingByte=='1') {
       // pill 1
+      Serial.println("Pill 1");
       return 1;
     } else if(incomingByte=='2') {
       // pill 2
+      Serial.println("Pill 2");
       return 2;
     }
   }
@@ -138,6 +140,8 @@ uint32_t avg_read(int PIN) {
     res += (analogRead(PIN) / PARAM_SENSOR_AVG_READ_CT);
     delay(PARAM_SENSOR_AVG_READ_DELAY);
   }
+  Serial.print("Sensor reading returned ");
+  Serial.println(res);
   return res;
 }
 
