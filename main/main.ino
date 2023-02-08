@@ -223,7 +223,7 @@ void actuator_down() {
     } else if (!digitalRead(PIN_LIMSW_H)) {
       // limit switch is triggered
       lin_motor_stop();
-      return
+      return;
     } else if ((analogRead(PIN_VACUUM_MOTOR_SHUNT) > PARAM_VACUUM_MOTOR_CURRENT_THRESHOLD)) {
       // motor current exceeded steady-state threshold
       lin_motor_stop();
